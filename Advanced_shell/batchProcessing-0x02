@@ -1,0 +1,30 @@
+#!/bin/bash
+
+POKEMON=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+DATA="../pokemon_data"
+ERROR_TXT="../apiAutomation-0x00/errors.txt"
+RETRIES=3
+
+mkdir -p "$DATA"
+
+for NAME in "${POKEMON[@]}"; do
+    echo "Fetching data for $NAME..."
+    COUNT=0
+    SUCCESS=0
+    while [[ $COUNT -lt $RETRIES ]]; do
+        API=$(curl -s -w "%{http_code}" -o "$DATA/$NAME.json" "https://pokeapi.co/api/v2/pokemon/$NAME")
+        if [[ "$API" -eq 200 ]]; then
+            echo "Saved data to $DATA/$NAME.json"
+            SUCCESS=1
+            break
+        fi
+        COUNT=$((COUNT + 1))
+        echo "Retry $COUNT for $NAME failed..."
+        sleep 1
+    done
+
+    if [[ $SUCCESS -eq 0 ]]; then
+        echo "Failed to fetch $NAME after $RETRIES attempts." >> "$ERROR_TXT"
+        rm -f "$DATA/$NAME.json"
+    fi
+done

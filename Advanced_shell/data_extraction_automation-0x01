@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DATA_JSON="../apiAutomation-0x00/data.json"
+
+NAME=$(jq -r '.name' "$DATA_JSON" | sed 's/.*/\u&/')
+HEIGHT=$(jq -r '.height' "$DATA_JSON" | awk '{ printf "%.1f", $1/10 }')
+WEIGHT=$(jq -r '.weight' "$DATA_JSON" | awk '{ printf "%.1f", $1/10 }')
+TYPE=$(jq -r '.types[0].type.name' "$DATA_JSON" | sed 's/.*/\u&/')
+
+echo "$NAME is of type $TYPE, weighs ${WEIGHT}kg, and is ${HEIGHT}m tall."

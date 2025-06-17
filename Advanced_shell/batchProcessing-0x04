@@ -1,0 +1,25 @@
+#!/bin/bash
+
+POKEMONS=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+DATA="../pokemon_data"
+ERROR_TXT="../apiAutomation-0x00/errors.txt"
+
+mkdir -p "$DATA"
+
+fetch_pokemon() {
+    NAME=$1
+    API=$(curl -s -w "%{http_code}" -o "$DATA/$NAME.json" "https://pokeapi.co/api/v2/pokemon/$NAME")
+    if [[ "$API" -eq 200 ]]; then
+        echo "Saved data to $DATA/$NAME.json"
+    else
+        echo "Error fetching $NAME (HTTP $API)" >> "$ERROR_TXT"
+        rm -f "$DATA/$NAME.json"
+    fi
+}
+
+for NAME in "${POKEMONS[@]}"; do
+    fetch_pokemon "$NAME" &
+done
+
+wait
+echo "All Pokémon fetched in parallel! 🚀"

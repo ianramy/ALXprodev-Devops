@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Define the file paths
+DATA_JSON="data.json"
+ERROR_TXT="errors.txt"
+
+#Define the API URL for Pikachu
+API="https://pokeapi.co/api/v2/pokemon/pikachu"
+
+# Using curl, make an API request
+response=$(curl -s -o "$DATA_JSON" -w "%{http_code}" "$API")
+
+# Check if the request was a success
+if [ "$response" -eq 200 ]; then
+    echo "API request successful. Data saved to $DATA_JSON."
+else
+# Log the errors in the errors.txt
+    echo "Error: API request failed with status code $response" >> "$ERROR_TXT"
+    echo "API request failed. Error logged to $ERROR_TXT."
+fi    
